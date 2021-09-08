@@ -1,37 +1,55 @@
-# This is a basic workflow to help you get started with Actions
 
-name: SecurityScanner
+name: Fully Compliant
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: [ master, main ]
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  licensing:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+    - name: Advance Security Compliance Action
+      uses: GeekMasher/advanced-security-compliance@main
+      with:
+        # Set the severity levels which to set the threshold. All previous 
+        # severities are included so selecting 'error' also selects 'critical' and 
+        # 'high' along with 'error'.
+        severity: error
 
-      # Compliance
-      - name: Advance Security Compliance Action
-        uses: GeekMasher/advanced-security-compliance@1.5
-        with:
-          # The owner/repo of where the policy is stored  
-          policy: GeekMasher/security-queries
-          # The local (within the workspace) or repository
-          policy-path: policies/default.yml
-          # The branch you want to target
-          policy-branch: main
+        # Repository owner/name.
+        # This can be setup using a separate repository to the one being analysed 
+        #  for security compliance
+        repository: GeekMasher/advanced-security-compliance
+
+        # The owner/repo of where the policy is stored
+        # This generally is primarily used for a single repository that defines 
+        #  your organizations security policy
+        policy: GeekMasher/security-queries
+
+        # The path where the policy lives. This might be in either the current 
+        #  repository or in a remote repository.
+        policy-path: policies/default.yml
+
+        # The branch you want to target using `policy` argument
+        policy-branch: main
+
+        # GitHub Personal Access Token to access the GitHub API.
+        # Secret Scanning and Dependabot do not allow their resources to be
+        #  exposed to Actions so this might need to be set using a token that has 
+        #  the ability to access the resources
+        token: ${{ secrets.ACCESS_TOKEN }}
+
+        # [optional] GitHub reference, this is passed in by Actions at runtime
+        ref: refs/heads/main
+
+        # [optional] What course of action to take upon discovering security issues that pass
+        # threshold?
+        action: break
+
+        # [optional] Additional arguments
+        argvs: '--disable-secret-scanning --disable-dependabot'
