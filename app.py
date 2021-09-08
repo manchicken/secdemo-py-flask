@@ -12,10 +12,35 @@
 
 
 from flask import Flask
+import json
+import pymysql
+
+DB_HOST = "localhost"
+DB_USER = "appuser"
+DB_PASSWORD = "apppassword"
+DB_NAME = "appdb"
+
 app = Flask(__name__)
+
+
+def db_conn():
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        passwd=DB_PASSWORD,
+        database=DB_NAME,
+    )
 
 
 @app.route('/')
 def index():
     return 'OK'
 
+
+@app.route('/key/<id>')
+def keyLookupById(id):
+    db = db_conn()
+    curs = db.cursor()
+    curs.execute(f"SELECT * FROM keys_and_values WHERE id={id}")
+    rows = curs.fetchall()
+    return json.dumps(rows)
