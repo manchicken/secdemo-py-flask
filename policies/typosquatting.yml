@@ -1,6 +1,0 @@
-
-dependencies:
-  conditions:
-    imports:
-      # Import text list of Typosquatting dependencies
-      names: ghascompliance/defaults/typosquatting.txt
